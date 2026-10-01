@@ -2,17 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
+:root {
+  color-scheme: light;
+}
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-body { margin: 0; background: #F8FAFC; color: #1D2939; font-family: var(--font-source-sans), sans-serif; }
+body {
+  margin: 0;
+  background: #F8FAFC;
+  color: #1D2939;
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  min-height: 100vh;
+}
 
-a { color: inherit; text-decoration: none; }
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
-button, a, input, select, textarea { outline-offset: 3px; }
+button, a, input, select, textarea {
+  outline-offset: 2px;
+}
 
-.landing { --cursor-x: 68%; --cursor-y: 28%; background: radial-gradient(50rem circle at var(--cursor-x) var(--cursor-y), rgba(125,211,252,.34), transparent 46%), radial-gradient(40rem circle at 12% 86%, rgba(196,181,253,.26), transparent 46%), linear-gradient(145deg,#f8fafc 20%,#eef7ff 58%,#fbf8ff); }
-@media (prefers-reduced-motion: reduce) { .landing { background: linear-gradient(145deg,#f8fafc,#eef7ff); } }
+/* Cursor dynamic gradient effect */
+.landing {
+  --cursor-x: 68%;
+  --cursor-y: 28%;
+  background:
+    radial-gradient(55rem circle at var(--cursor-x) var(--cursor-y), rgba(125, 211, 252, 0.32), transparent 48%),
+    radial-gradient(42rem circle at 15% 85%, rgba(196, 181, 253, 0.24), transparent 48%),
+    radial-gradient(35rem circle at 85% 15%, rgba(147, 197, 253, 0.18), transparent 45%),
+    linear-gradient(145deg, #f8fafc 20%, #eef7ff 58%, #fbf8ff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing {
+    background: linear-gradient(145deg, #f8fafc, #eef7ff);
+  }
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Glassmorphism and surface cards */
+.glass-surface {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.subtle-border {
+  border: 1px solid rgba(208, 213, 221, 0.8);
+}

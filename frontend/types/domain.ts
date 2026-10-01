@@ -1,3 +1,3 @@
 export interface Room { id:string; roomCode:string; name:string; floor:string; capacity:number; description:string|null; facilities:string[]; active:boolean }
-export interface EmployeeProfile { id:string; employeeCode:string; firstName:string; lastName:string; department:string; phone:string|null; email:string }
+export interface EmployeeProfile { id:string; employeeCode:string; firstName:string; lastName:string; department:string; phone:string|null; email:string; role:string; emailVerified:boolean; active:boolean }
 export interface EmployeeProfileUpdate { firstName:string; lastName:string; department:string; phone:string }

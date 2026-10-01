@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { PageTransition } from "@/components/transitions/page-transition";
 import { cn } from "@/lib/utils";
 
 interface AppShellProps {
@@ -146,6 +147,9 @@ export function AppShell({ children }: AppShellProps) {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  aria-expanded={userDropdownOpen}
+                  aria-haspopup="menu"
+                  aria-label="User account menu"
                   className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink hover:bg-slate-50 transition-colors shadow-subtle-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-work-blue/30"
                 >
                   <div className="grid size-6 place-items-center rounded-lg bg-work-blue-100 text-work-blue font-bold text-xs">
@@ -220,7 +224,9 @@ export function AppShell({ children }: AppShellProps) {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle navigation menu"
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-menu"
               className="md:hidden rounded-xl p-2 text-slate-600 hover:bg-slate-100 transition-colors"
             >
               {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
@@ -230,7 +236,7 @@ export function AppShell({ children }: AppShellProps) {
 
         {/* Mobile Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-line bg-white px-4 py-3 space-y-1 shadow-subtle-md">
+          <div id="mobile-nav-menu" className="md:hidden border-b border-line bg-white px-4 py-3 space-y-1 shadow-subtle-md">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -266,8 +272,8 @@ export function AppShell({ children }: AppShellProps) {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {children}
+      <main id="main-content" className="flex-1 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <PageTransition>{children}</PageTransition>
       </main>
 
       {/* Global Compact Footer */}

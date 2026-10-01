@@ -25,6 +25,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${sourceSans.variable} ${ibmPlexMono.variable}`}>
+        {/* Skip to main content — WCAG 2.1 Level A */}
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

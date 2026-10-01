@@ -18,19 +18,18 @@ import {
   ChevronRight,
   PlusCircle,
   Calendar,
+  Radio,
+  ArrowRight,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { bookingApi, type Booking } from "@/services/bookings";
 import { roomApi } from "@/services/rooms";
 import type { Room } from "@/types/domain";
 import { AppShell } from "@/components/shell/app-shell";
-import { PageHeader } from "@/components/ui/page-header";
-import { SectionHeader } from "@/components/ui/section-header";
 import { ActionButton } from "@/components/ui/action-button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { LoadingState, Skeleton } from "@/components/ui/loading-state";
+import { Skeleton } from "@/components/ui/loading-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { cn } from "@/lib/utils";
 
@@ -110,7 +109,7 @@ export default function DashboardPage() {
 
   // Recent bookings (up to 4)
   const recentBookings = React.useMemo(() => {
-    return [...(rawBookings || [])].slice(0, 4);
+    return [...(rawBookings || [])].slice(0, 5);
   }, [rawBookings]);
 
   // If unauthenticated and done loading, redirect or display sign in card
@@ -135,10 +134,12 @@ export default function DashboardPage() {
     );
   }
 
+  const activeRoomsCount = (rawRooms || []).filter((r) => r.active).length;
+
   return (
     <AppShell>
-      {/* Top Welcome & Context Area */}
-      <div className="mb-8">
+      {/* 1. TOP GREETING & COMMAND CENTER HEADER */}
+      <div className="mb-8 border-b border-line/60 pb-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-work-blue uppercase tracking-wider mb-1">
@@ -153,9 +154,7 @@ export default function DashboardPage() {
               </h1>
             )}
             <p className="mt-1 text-sm text-slate-500 max-w-xl">
-              {upcomingBooking
-                ? "Here is your upcoming schedule and room availability for today."
-                : "Your schedule is clear. Book a room or explore the 3D office."}
+              Your workplace at a glance. Manage reservations and inspect active room availability.
             </p>
           </div>
 
@@ -167,7 +166,7 @@ export default function DashboardPage() {
                 size="md"
                 leftIcon={<PlusCircle className="size-4" />}
               >
-                Book a Room
+                Reserve Space
               </ActionButton>
             </Link>
             <Link href="/office">
@@ -176,431 +175,268 @@ export default function DashboardPage() {
                 size="md"
                 leftIcon={<Glasses className="size-4 text-work-blue" />}
               >
-                Open 3D Office
+                3D Digital Twin
               </ActionButton>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Main Grid Layout: 2 Columns */}
-      <div className="grid gap-8 lg:grid-cols-[1.8fr_1.2fr] items-start">
-        {/* LEFT COLUMN: Schedule, Next Meeting, Timeline */}
+      {/* 2. LIVE WORKSPACE SPATIAL BANNER */}
+      <div className="mb-8 rounded-3xl border border-line bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 p-6 sm:p-8 text-white shadow-subtle-lg relative overflow-hidden">
+        {/* Subtle grid pattern background */}
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-3 py-1 text-xs font-mono text-sky-300 mb-3 backdrop-blur-sm">
+              <Radio className="size-3 text-emerald-400 animate-pulse" />
+              <span>LIVE WORKSPACE · {activeRoomsCount} ACTIVE ROOMS</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              Explore your office in interactive 3D
+            </h2>
+            <p className="mt-1.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Real-time room occupancy, WebXR virtual reality locomotion, and spatial room directory.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/office">
+              <ActionButton
+                variant="secondary"
+                size="md"
+                className="bg-white text-slate-900 border-white hover:bg-slate-100 font-semibold"
+                rightIcon={<ArrowRight className="size-4" />}
+              >
+                Launch 3D Office
+              </ActionButton>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. MAIN WORKSPACE SPLIT (Timeline + Room Availability Stream) */}
+      <div className="grid gap-8 lg:grid-cols-[1.6fr_1.4fr] items-start">
+        {/* LEFT COLUMN: Next Meeting & Schedule Timeline */}
         <div className="space-y-8">
-          {/* UPCOMING MEETING SPOTLIGHT */}
-          <Card className="border-work-blue-100 bg-gradient-to-br from-white via-white to-work-blue-50/40">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Clock className="size-4 text-work-blue" />
-                    <span>Next Upcoming Meeting</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Your next scheduled room reservation
-                  </CardDescription>
-                </div>
-                {upcomingBooking && (
-                  <StatusBadge status={upcomingBooking.status} size="sm" />
-                )}
+          {/* NEXT RESERVATION SPOTLIGHT */}
+          <div className="rounded-3xl border border-line bg-white p-6 shadow-subtle-sm">
+            <div className="flex items-center justify-between border-b border-line/60 pb-4 mb-4">
+              <div className="flex items-center gap-2">
+                <Clock className="size-4 text-work-blue" />
+                <h2 className="text-sm font-bold uppercase tracking-wider text-ink font-mono">
+                  Next Reservation
+                </h2>
               </div>
-            </CardHeader>
+              {upcomingBooking && (
+                <StatusBadge status={upcomingBooking.status} size="sm" />
+              )}
+            </div>
 
-            <CardContent>
-              {bookingsQuery.isLoading ? (
-                <div className="space-y-2 py-4">
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-              ) : bookingsQuery.isError ? (
-                <ErrorState
-                  message="Failed to load your upcoming booking"
-                  onRetry={() => bookingsQuery.refetch()}
-                />
-              ) : upcomingBooking ? (
-                <div className="rounded-2xl border border-line/80 bg-white p-5 shadow-subtle-sm">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-lg font-bold text-ink">
-                        {roomMap.get(upcomingBooking.roomId)?.name || "Meeting Room"}
+            {bookingsQuery.isLoading ? (
+              <div className="space-y-2 py-4">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ) : bookingsQuery.isError ? (
+              <ErrorState
+                message="Failed to load your upcoming booking"
+                onRetry={() => bookingsQuery.refetch()}
+              />
+            ) : upcomingBooking ? (
+              <div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-ink">
+                      {roomMap.get(upcomingBooking.roomId)?.name || "Meeting Room"}
+                    </h3>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-slate-500 font-mono">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="size-3.5 text-work-blue" />
+                        <span>
+                          Floor {roomMap.get(upcomingBooking.roomId)?.floor || "1"} (
+                          {roomMap.get(upcomingBooking.roomId)?.roomCode || "Room"})
+                        </span>
+                      </span>
+                      <span>·</span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="size-3.5 text-slate-400" />
+                        <span>{upcomingBooking.bookingDate}</span>
+                      </span>
+                      <span>·</span>
+                      <span className="flex items-center gap-1 font-semibold text-work-blue">
+                        <Clock className="size-3.5" />
+                        <span>
+                          {upcomingBooking.startTime.slice(0, 5)} – {upcomingBooking.endTime.slice(0, 5)}
+                        </span>
+                      </span>
+                    </div>
+                    {upcomingBooking.purpose && (
+                      <p className="mt-3 text-xs text-slate-600 bg-paper-subtle p-3 rounded-xl border border-line/60">
+                        <span className="font-semibold text-slate-700">Agenda: </span>
+                        {upcomingBooking.purpose}
                       </p>
-                      <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-500 font-mono">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="size-3.5 text-work-blue" />
-                          <span>
-                            Floor {roomMap.get(upcomingBooking.roomId)?.floor || "1"} (
-                            {roomMap.get(upcomingBooking.roomId)?.roomCode || "Room"}
-                            )
-                          </span>
-                        </span>
-                        <span>·</span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="size-3.5 text-slate-400" />
-                          <span>{upcomingBooking.bookingDate}</span>
-                        </span>
-                        <span>·</span>
-                        <span className="flex items-center gap-1 font-semibold text-work-blue">
-                          <Clock className="size-3.5" />
-                          <span>
-                            {upcomingBooking.startTime.slice(0, 5)} – {upcomingBooking.endTime.slice(0, 5)}
-                          </span>
-                        </span>
-                      </div>
-                      {upcomingBooking.purpose && (
-                        <p className="mt-3 text-xs text-slate-600 bg-paper-subtle p-2.5 rounded-xl border border-line/60">
-                          <span className="font-semibold text-slate-700">Purpose: </span>
-                          {upcomingBooking.purpose}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="shrink-0 flex items-center gap-2">
-                      <Link href="/bookings">
-                        <ActionButton variant="secondary" size="sm">
-                          Manage Booking
-                        </ActionButton>
-                      </Link>
-                    </div>
+                    )}
                   </div>
-                </div>
-              ) : (
-                <EmptyState
-                  icon={<CalendarDays className="size-6 text-slate-400" />}
-                  title="No upcoming meetings"
-                  description="You have no upcoming meeting room reservations scheduled."
-                  action={
-                    <Link href="/rooms">
+
+                  <div className="shrink-0 flex items-center gap-2">
+                    <Link href="/bookings">
                       <ActionButton variant="secondary" size="sm">
-                        Book a Room Now
+                        Manage
                       </ActionButton>
                     </Link>
-                  }
-                />
-              )}
-            </CardContent>
-          </Card>
-
-          {/* TODAY'S SCHEDULE TIMELINE */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <CalendarDays className="size-4 text-work-blue" />
-                    <span>Today&apos;s Schedule</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Your meeting timeline for today ({todayStr})
-                  </CardDescription>
+                  </div>
                 </div>
-                <span className="text-xs font-mono text-slate-400">
-                  {todayBookings.length} {todayBookings.length === 1 ? "booking" : "bookings"}
-                </span>
               </div>
-            </CardHeader>
+            ) : (
+              <EmptyState
+                icon={<CalendarDays className="size-6 text-slate-400" />}
+                title="No upcoming reservations"
+                description="Your calendar is open. Reserve a workspace whenever you are ready."
+                action={
+                  <Link href="/rooms">
+                    <ActionButton variant="secondary" size="sm">
+                      Browse Rooms
+                    </ActionButton>
+                  </Link>
+                }
+              />
+            )}
+          </div>
 
-            <CardContent>
-              {bookingsQuery.isLoading ? (
-                <div className="space-y-3 py-2">
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-12 w-full" />
-                </div>
-              ) : todayBookings.length > 0 ? (
-                <div className="relative pl-6 border-l-2 border-work-blue-200/80 space-y-6 my-2">
-                  {todayBookings.map((b) => {
-                    const room = roomMap.get(b.roomId);
-                    const isCancelled = b.status === "CANCELLED";
-                    return (
-                      <div key={b.id} className="relative group">
-                        {/* Timeline dot */}
-                        <div
-                          className={cn(
-                            "absolute -left-[31px] top-1.5 size-3.5 rounded-full border-2 border-white shadow-subtle-sm transition-transform group-hover:scale-125",
-                            isCancelled ? "bg-rose-400" : "bg-work-blue"
-                          )}
-                        />
-                        <div
-                          className={cn(
-                            "rounded-2xl border p-4 transition-all",
-                            isCancelled
-                              ? "bg-rose-50/40 border-rose-100 text-slate-500"
-                              : "bg-white border-line/80 shadow-subtle-sm hover:border-slate-300"
-                          )}
-                        >
-                          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-semibold text-ink text-sm">
-                                  {room?.name || "Meeting Room"}
-                                </span>
-                                <span className="font-mono text-xs text-slate-400">
-                                  ({room?.roomCode || "Room"})
-                                </span>
-                              </div>
-                              <p className="mt-1 text-xs text-slate-500 font-mono">
-                                {b.startTime.slice(0, 5)} – {b.endTime.slice(0, 5)} · Floor {room?.floor || "1"}
-                              </p>
-                            </div>
-                            <div>
-                              <StatusBadge status={b.status} size="sm" />
-                            </div>
-                          </div>
-                          {b.purpose && (
-                            <p className="mt-2 text-xs text-slate-600 line-clamp-1">
-                              {b.purpose}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <EmptyState
-                  icon={<Clock className="size-6 text-slate-400" />}
-                  title="No meetings today"
-                  description="You have no room reservations scheduled for today."
-                />
-              )}
-            </CardContent>
-          </Card>
-
-          {/* RECENT BOOKINGS ACTIVITY */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <CalendarCheck className="size-4 text-work-blue" />
-                    <span>Recent Bookings</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Your recent meeting room booking history
-                  </CardDescription>
-                </div>
-                <Link
-                  href="/bookings"
-                  className="text-xs font-semibold text-work-blue hover:underline flex items-center gap-1"
-                >
-                  <span>View all</span>
-                  <ChevronRight className="size-3.5" />
-                </Link>
+          {/* RECENT BOOKINGS TIMELINE */}
+          <div className="rounded-3xl border border-line bg-white p-6 shadow-subtle-sm">
+            <div className="flex items-center justify-between border-b border-line/60 pb-4 mb-4">
+              <div className="flex items-center gap-2">
+                <CalendarCheck className="size-4 text-work-blue" />
+                <h2 className="text-sm font-bold uppercase tracking-wider text-ink font-mono">
+                  Recent Activity
+                </h2>
               </div>
-            </CardHeader>
+              <Link
+                href="/bookings"
+                className="text-xs font-semibold text-work-blue hover:underline flex items-center gap-1 font-mono"
+              >
+                <span>View all bookings</span>
+                <ChevronRight className="size-3.5" />
+              </Link>
+            </div>
 
-            <CardContent>
-              {bookingsQuery.isLoading ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              ) : recentBookings.length > 0 ? (
-                <div className="divide-y divide-line/60">
-                  {recentBookings.map((b) => {
-                    const room = roomMap.get(b.roomId);
-                    return (
-                      <div
-                        key={b.id}
-                        className="py-3.5 flex items-center justify-between gap-4 first:pt-0 last:pb-0"
-                      >
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-ink truncate">
-                            {room?.name || "Meeting Room"}
-                          </p>
-                          <p className="text-xs text-slate-500 font-mono">
-                            {b.bookingDate} · {b.startTime.slice(0, 5)} – {b.endTime.slice(0, 5)}
-                          </p>
-                        </div>
-                        <div className="shrink-0">
-                          <StatusBadge status={b.status} size="sm" />
-                        </div>
+            {bookingsQuery.isLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ) : recentBookings.length > 0 ? (
+              <div className="divide-y divide-line/60">
+                {recentBookings.map((b) => {
+                  const room = roomMap.get(b.roomId);
+                  return (
+                    <div
+                      key={b.id}
+                      className="py-3.5 flex items-center justify-between gap-4 first:pt-0 last:pb-0"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-ink truncate">
+                          {room?.name || "Meeting Room"}
+                        </p>
+                        <p className="text-xs text-slate-500 font-mono">
+                          {b.bookingDate} · {b.startTime.slice(0, 5)} – {b.endTime.slice(0, 5)}
+                        </p>
                       </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <EmptyState
-                  title="No booking history"
-                  description="Your recent meeting room reservations will appear here."
-                />
-              )}
-            </CardContent>
-          </Card>
+                      <div className="shrink-0">
+                        <StatusBadge status={b.status} size="sm" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <EmptyState
+                title="No booking history"
+                description="Your past and current reservations will appear here."
+              />
+            )}
+          </div>
         </div>
 
-        {/* RIGHT COLUMN: Quick Actions & Room Directory */}
+        {/* RIGHT COLUMN: Room Availability Stream */}
         <div className="space-y-8">
-          {/* QUICK ACTIONS */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Workplace Quick Actions</CardTitle>
-              <CardDescription>Instant access to primary tools</CardDescription>
-            </CardHeader>
+          <div className="rounded-3xl border border-line bg-white p-6 shadow-subtle-sm">
+            <div className="flex items-center justify-between border-b border-line/60 pb-4 mb-4">
+              <div className="flex items-center gap-2">
+                <DoorOpen className="size-4 text-work-blue" />
+                <h2 className="text-sm font-bold uppercase tracking-wider text-ink font-mono">
+                  Room Availability
+                </h2>
+              </div>
+              <Link
+                href="/rooms"
+                className="text-xs font-semibold text-work-blue hover:underline flex items-center gap-1 font-mono"
+              >
+                <span>Directory</span>
+                <ChevronRight className="size-3.5" />
+              </Link>
+            </div>
 
-            <CardContent>
-              <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
-                <Link
-                  href="/rooms"
-                  className="flex items-center gap-3.5 rounded-2xl border border-line/80 bg-white p-3.5 shadow-subtle-sm transition-all hover:bg-slate-50 hover:border-slate-300 group"
-                >
-                  <div className="grid size-10 place-items-center rounded-xl bg-work-blue-50 text-work-blue group-hover:bg-work-blue group-hover:text-white transition-colors">
-                    <DoorOpen className="size-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-ink">Book a Room</p>
-                    <p className="text-xs text-slate-400 truncate">
-                      Search meeting rooms & reserve slots
-                    </p>
-                  </div>
-                  <ChevronRight className="size-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-
-                <Link
-                  href="/office"
-                  className="flex items-center gap-3.5 rounded-2xl border border-line/80 bg-white p-3.5 shadow-subtle-sm transition-all hover:bg-slate-50 hover:border-slate-300 group"
-                >
-                  <div className="grid size-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                    <Glasses className="size-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-ink">3D Digital Office</p>
-                    <p className="text-xs text-slate-400 truncate">
-                      Spatial view & WebXR VR experience
-                    </p>
-                  </div>
-                  <ChevronRight className="size-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-
-                <Link
-                  href="/bookings"
-                  className="flex items-center gap-3.5 rounded-2xl border border-line/80 bg-white p-3.5 shadow-subtle-sm transition-all hover:bg-slate-50 hover:border-slate-300 group"
-                >
-                  <div className="grid size-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                    <CalendarCheck className="size-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-ink">My Bookings</p>
-                    <p className="text-xs text-slate-400 truncate">
-                      Manage upcoming and historical reservations
-                    </p>
-                  </div>
-                  <ChevronRight className="size-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-3.5 rounded-2xl border border-line/80 bg-white p-3.5 shadow-subtle-sm transition-all hover:bg-slate-50 hover:border-slate-300 group"
-                >
-                  <div className="grid size-10 place-items-center rounded-xl bg-sky-50 text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-colors">
-                    <User className="size-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-ink">Employee Profile</p>
-                    <p className="text-xs text-slate-400 truncate">
-                      View details & update workplace identity
-                    </p>
-                  </div>
-                  <ChevronRight className="size-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-
-                {isAdmin && (
+            {roomsQuery.isLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-14 w-full" />
+                <Skeleton className="h-14 w-full" />
+                <Skeleton className="h-14 w-full" />
+              </div>
+            ) : roomsQuery.isError ? (
+              <ErrorState
+                message="Unable to load room catalogue"
+                onRetry={() => roomsQuery.refetch()}
+              />
+            ) : rawRooms && rawRooms.length > 0 ? (
+              <div className="space-y-3">
+                {rawRooms.map((room) => (
                   <Link
-                    href="/admin"
-                    className="flex items-center gap-3.5 rounded-2xl border border-indigo-200 bg-indigo-50/40 p-3.5 shadow-subtle-sm transition-all hover:bg-indigo-50 group"
+                    key={room.id}
+                    href={`/rooms/${room.id}`}
+                    className="block rounded-2xl border border-line/70 bg-paper-subtle/40 p-3.5 transition-all hover:bg-white hover:border-work-blue-300 hover:shadow-subtle-sm group"
                   >
-                    <div className="grid size-10 place-items-center rounded-xl bg-indigo-100 text-indigo-700 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                      <ShieldCheck className="size-5" />
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-mono text-xs font-bold text-work-blue">
+                        {room.roomCode}
+                      </span>
+                      <StatusBadge
+                        status={room.active ? "ACTIVE" : "INACTIVE"}
+                        size="sm"
+                      />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-indigo-950">Admin Console</p>
-                      <p className="text-xs text-indigo-700/80 truncate">
-                        Manage rooms, employees & system metrics
+                    <p className="text-sm font-semibold text-ink group-hover:text-work-blue transition-colors">
+                      {room.name}
+                    </p>
+                    <div className="mt-1 flex items-center gap-3 text-xs text-slate-500 font-mono">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="size-3" />
+                        <span>Floor {room.floor}</span>
+                      </span>
+                      <span>·</span>
+                      <span className="flex items-center gap-1">
+                        <Users className="size-3" />
+                        <span>{room.capacity} seats</span>
+                      </span>
+                    </div>
+                    {room.facilities && room.facilities.length > 0 && (
+                      <p className="mt-2 text-[11px] text-slate-400 truncate">
+                        {room.facilities.join(" · ")}
                       </p>
-                    </div>
-                    <ChevronRight className="size-4 text-indigo-600 group-hover:translate-x-0.5 transition-transform" />
+                    )}
                   </Link>
-                )}
+                ))}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* ROOM DIRECTORY OVERVIEW */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <DoorOpen className="size-4 text-work-blue" />
-                    <span>Meeting Rooms</span>
-                  </CardTitle>
-                  <CardDescription>Active office spaces</CardDescription>
-                </div>
-                <Link
-                  href="/rooms"
-                  className="text-xs font-semibold text-work-blue hover:underline flex items-center gap-1"
-                >
-                  <span>All rooms</span>
-                  <ChevronRight className="size-3.5" />
-                </Link>
-              </div>
-            </CardHeader>
-
-            <CardContent>
-              {roomsQuery.isLoading ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-14 w-full" />
-                  <Skeleton className="h-14 w-full" />
-                </div>
-              ) : roomsQuery.isError ? (
-                <ErrorState
-                  message="Unable to load room catalogue"
-                  onRetry={() => roomsQuery.refetch()}
-                />
-              ) : rawRooms && rawRooms.length > 0 ? (
-                <div className="space-y-3">
-                  {rawRooms.slice(0, 4).map((room) => (
-                    <Link
-                      key={room.id}
-                      href={`/rooms/${room.id}`}
-                      className="block rounded-2xl border border-line/70 bg-white p-3.5 transition-all hover:border-work-blue-300 hover:shadow-subtle-sm"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-mono text-xs font-bold text-work-blue">
-                          {room.roomCode}
-                        </span>
-                        <StatusBadge
-                          status={room.active ? "ACTIVE" : "INACTIVE"}
-                          size="sm"
-                        />
-                      </div>
-                      <p className="text-sm font-semibold text-ink">{room.name}</p>
-                      <div className="mt-1 flex items-center gap-3 text-xs text-slate-500 font-mono">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="size-3" />
-                          <span>Floor {room.floor}</span>
-                        </span>
-                        <span>·</span>
-                        <span className="flex items-center gap-1">
-                          <Users className="size-3" />
-                          <span>{room.capacity} seats</span>
-                        </span>
-                      </div>
-                      {room.facilities && room.facilities.length > 0 && (
-                        <p className="mt-2 text-[11px] text-slate-400 truncate">
-                          {room.facilities.join(" · ")}
-                        </p>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <EmptyState
-                  title="No active rooms"
-                  description="No rooms are currently available in the catalogue."
-                />
-              )}
-            </CardContent>
-          </Card>
+            ) : (
+              <EmptyState
+                title="No active rooms"
+                description="No rooms are currently available in the catalogue."
+              />
+            )}
+          </div>
         </div>
       </div>
     </AppShell>

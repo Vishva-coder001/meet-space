@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body { margin: 0; background: #F8FAFC; color: #1D2939; font-family: var(--font-source-sans), sans-serif; }
+
+a { color: inherit; text-decoration: none; }
+
+button, a, input, select, textarea { outline-offset: 3px; }
+
+.landing { --cursor-x: 68%; --cursor-y: 28%; background: radial-gradient(50rem circle at var(--cursor-x) var(--cursor-y), rgba(125,211,252,.34), transparent 46%), radial-gradient(40rem circle at 12% 86%, rgba(196,181,253,.26), transparent 46%), linear-gradient(145deg,#f8fafc 20%,#eef7ff 58%,#fbf8ff); }
+@media (prefers-reduced-motion: reduce) { .landing { background: linear-gradient(145deg,#f8fafc,#eef7ff); } }

@@ -1,0 +1,6 @@
+"use client";
+import Link from "next/link";
+import { AuthForm } from "@/components/auth-form";
+import { AuthShell } from "@/components/auth-shell";
+import { authApi } from "@/services/auth";
+export default function Page(){return <AuthShell title="Choose a new password" detail="Use the single-use reset token from your secure email link, then choose a new password."><AuthForm fields={[{name:"token",label:"Reset token",autoComplete:"off"},{name:"password",label:"New password",type:"password",autoComplete:"new-password",hint:"Use 12 to 72 characters."},{name:"confirmPassword",label:"Confirm new password",type:"password",autoComplete:"new-password"}]} submit="Save new password" successMessage="Your password has been reset. You can now sign in." validate={v=>({...(v.password&&v.password.length<12?{password:"Password must be at least 12 characters."}:{}),...(v.confirmPassword&&v.password!==v.confirmPassword?{confirmPassword:"Passwords do not match."}:{})})} onSubmit={v=>authApi.reset(v.token,v.password)}/><p className="mt-5 text-sm text-slate"><Link href="/login" className="font-semibold text-work-blue hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-work-blue">Back to sign in</Link></p></AuthShell>;}

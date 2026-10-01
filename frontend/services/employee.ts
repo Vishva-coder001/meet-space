@@ -1,0 +1,2 @@
+import { apiClient, type ApiResult } from "./api"; import type { EmployeeProfile, EmployeeProfileUpdate } from "@/types/domain";
+export const employeeApi={me:():Promise<ApiResult<EmployeeProfile>>=>apiClient.get<EmployeeProfile>("/api/employees/me"),update:(body:EmployeeProfileUpdate):Promise<ApiResult<EmployeeProfile>>=>apiClient.put<EmployeeProfile>("/api/employees/me",body)};

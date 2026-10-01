@@ -1,0 +1,2 @@
+package com.meetspace.security; import org.springframework.security.core.*; import org.springframework.security.core.authority.SimpleGrantedAuthority; import java.util.*;
+public record UserPrincipal(UUID id,String email,String role) implements java.security.Principal { public String getName(){return email;} public Collection<? extends GrantedAuthority> authorities(){return List.of(new SimpleGrantedAuthority("ROLE_"+role));} }

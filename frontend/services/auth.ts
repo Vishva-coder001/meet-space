@@ -1,0 +1,2 @@
+import {apiClient} from "./api";
+export const authApi={register:(body:unknown)=>apiClient.post("/api/auth/register",body),login:(body:unknown)=>apiClient.post("/api/auth/login",body),verify:(token:string)=>apiClient.post("/api/auth/verify-email",{token}),forgot:(email:string)=>apiClient.post("/api/auth/forgot-password",{email}),reset:(token:string,password:string)=>apiClient.post("/api/auth/reset-password",{token,password})};

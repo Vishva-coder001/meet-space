@@ -1,0 +1,1 @@
+package com.meetspace.realtime; import java.time.*; import java.util.*; public record RealtimeEvent(String ownerName,String eventType,UUID bookingId,UUID roomId,LocalDate bookingDate,LocalTime startTime,LocalTime endTime,String status,Instant timestamp){}

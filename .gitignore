@@ -1,0 +1,20 @@
+# Environment and dependencies
+.env
+.env.local
+.env.*.local
+!**/.env.example
+node_modules/
+
+# Build outputs
+.next/
+out/
+backend/target/
+
+# Tooling and editor files
+.idea/
+.vscode/
+*.iml
+*.log
+coverage/
+.DS_Store
+

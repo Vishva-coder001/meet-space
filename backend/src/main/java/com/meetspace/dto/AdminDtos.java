@@ -1,0 +1,3 @@
+package com.meetspace.dto;
+import java.time.*; import java.util.*;
+public final class AdminDtos { private AdminDtos(){} public record Dashboard(long totalEmployees,long activeEmployees,long activeRooms,long bookingsToday,long upcomingBookings,long cancelledBookings){} public record Employee(UUID id,String employeeCode,String firstName,String lastName,String email,String department,String phone,boolean active,boolean emailVerified,Instant createdAt){} public record Booking(UUID id,String employeeName,String employeeEmail,String roomName,String roomCode,LocalDate bookingDate,LocalTime startTime,LocalTime endTime,String purpose,String status,Instant createdAt){} }

@@ -1,0 +1,2 @@
+import { apiClient, type ApiResult } from "./api"; import type { Room } from "@/types/domain";
+export const roomApi={list:():Promise<ApiResult<Room[]>>=>apiClient.get<Room[]>("/api/rooms"),get:(id:string):Promise<ApiResult<Room>>=>apiClient.get<Room>(`/api/rooms/${id}`)};

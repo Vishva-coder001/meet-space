@@ -1,0 +1,6 @@
+"use client";
+import Link from "next/link";
+import { AuthForm } from "@/components/auth-form";
+import { AuthShell } from "@/components/auth-shell";
+import { authApi } from "@/services/auth";
+export default function Page(){return <AuthShell title="Create your MeetSpace account" detail="Register as an employee to book and manage meeting rooms."><AuthForm fields={[{name:"employeeId",label:"Employee ID",autoComplete:"off"},{name:"fullName",label:"Full name",autoComplete:"name"},{name:"department",label:"Department",autoComplete:"organization-title"},{name:"email",label:"Email",type:"email",autoComplete:"email"},{name:"password",label:"Password",type:"password",autoComplete:"new-password",hint:"Use 12 to 72 characters."}]} submit="Create account" successMessage="Your account was created. Check your email to verify it before signing in." validate={(v): Record<string, string> => v.password && v.password.length < 12 ? {password:"Password must be at least 12 characters."} : {}} onSubmit={authApi.register}/><p className="mt-5 border-t border-line pt-5 text-sm text-slate">Already have an account? <Link href="/login" className="font-semibold text-work-blue hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-work-blue">Sign in</Link></p></AuthShell>;}

@@ -1,0 +1,2 @@
+package com.meetspace.service; import com.meetspace.dto.AdminDtos.*; import com.meetspace.repository.AdminRepository; import java.util.*; import org.springframework.stereotype.Service;
+@Service public class AdminService { private final AdminRepository repository; public AdminService(AdminRepository repository){this.repository=repository;} public Dashboard dashboard(){return repository.dashboard();} public List<Employee> employees(){return repository.employees();} public List<Booking> bookings(){return repository.bookings();} }

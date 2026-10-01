@@ -1,0 +1,2 @@
+package com.meetspace.dto; import jakarta.validation.constraints.*; import java.util.UUID;
+public final class EmployeeDtos {private EmployeeDtos(){} public record Profile(UUID id,String employeeCode,String firstName,String lastName,String department,String phone,String email){} public record Update(@NotBlank @Size(max=100) String firstName,@NotBlank @Size(max=100) String lastName,@NotBlank @Size(max=100) String department,@Size(max=30) String phone){}}

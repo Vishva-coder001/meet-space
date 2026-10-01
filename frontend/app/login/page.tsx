@@ -1,0 +1,6 @@
+"use client";
+import Link from "next/link";
+import { AuthForm } from "@/components/auth-form";
+import { AuthShell } from "@/components/auth-shell";
+import { authApi } from "@/services/auth";
+export default function Page(){return <AuthShell title="Welcome back" detail="Sign in to your MeetSpace account."><AuthForm fields={[{name:"email",label:"Email",type:"email",autoComplete:"email"},{name:"password",label:"Password",type:"password",autoComplete:"current-password"}]} submit="Sign in" successMessage="Signed in successfully." onSubmit={authApi.login}/><p className="mt-5 text-sm text-slate"><Link href="/forgot-password" className="font-semibold text-work-blue hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-work-blue">Forgot password?</Link></p><p className="mt-4 border-t border-line pt-5 text-sm text-slate">Don&apos;t have an account? <Link href="/register" className="font-semibold text-work-blue hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-work-blue">Create one</Link></p></AuthShell>;}

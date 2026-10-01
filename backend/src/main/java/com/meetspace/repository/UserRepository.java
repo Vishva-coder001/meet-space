@@ -1,0 +1,14 @@
+package com.meetspace.repository;
+import com.meetspace.model.UserAccount; import org.springframework.jdbc.core.JdbcTemplate; import org.springframework.stereotype.Repository; import java.util.*;
+@Repository public class UserRepository { private final JdbcTemplate jdbc; public UserRepository(JdbcTemplate jdbc){this.jdbc=jdbc;}
+ public Optional<UserAccount> findByEmail(String email){return jdbc.query("select id,email,password_hash,role,is_active,email_verified from users where lower(email)=lower(?)",(rs,n)->new UserAccount(UUID.fromString(rs.getString("id")),rs.getString("email"),rs.getString("password_hash"),rs.getString("role"),rs.getBoolean("is_active"),rs.getBoolean("email_verified")),email).stream().findFirst();}
+ public Optional<UserAccount> findById(UUID id){return jdbc.query("select id,email,password_hash,role,is_active,email_verified from users where id=?",(rs,n)->new UserAccount(UUID.fromString(rs.getString("id")),rs.getString("email"),rs.getString("password_hash"),rs.getString("role"),rs.getBoolean("is_active"),rs.getBoolean("email_verified")),id).stream().findFirst();}
+ public UUID createUser(String email,String hash){UUID id=UUID.randomUUID();jdbc.update("insert into users(id,email,password_hash,role,is_active,email_verified) values(?,?,?,'EMPLOYEE',true,false)",id,email,hash);return id;}
+ public void createEmployee(UUID userId,String code,String first,String last,String department){jdbc.update("insert into employees(user_id,employee_code,first_name,last_name,department) values(?,?,?,?,?)",userId,code,first,last,department);}
+ public void createVerification(UUID userId,String hash,int hours){jdbc.update("insert into email_verifications(user_id,token_hash,expires_at) values(?,?,current_timestamp + (? * interval '1 hour'))",userId,hash,hours);}
+ public Optional<UUID> consumeVerification(String hash){return jdbc.query("update email_verifications set used_at=current_timestamp where token_hash=? and used_at is null and expires_at>current_timestamp returning user_id",(rs,n)->UUID.fromString(rs.getString(1)),hash).stream().findFirst();}
+ public void markVerified(UUID id){jdbc.update("update users set email_verified=true where id=?",id);}
+ public void createReset(UUID userId,String hash,int minutes){jdbc.update("insert into password_resets(user_id,token_hash,expires_at) values(?,?,current_timestamp + (? * interval '1 minute'))",userId,hash,minutes);}
+ public Optional<UUID> consumeReset(String hash){return jdbc.query("update password_resets set used_at=current_timestamp where token_hash=? and used_at is null and expires_at>current_timestamp returning user_id",(rs,n)->UUID.fromString(rs.getString(1)),hash).stream().findFirst();}
+ public void updatePassword(UUID id,String hash){jdbc.update("update users set password_hash=? where id=?",hash,id);}
+}

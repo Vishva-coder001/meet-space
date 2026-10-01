@@ -1,0 +1,2 @@
+package com.meetspace.dto; import jakarta.validation.constraints.*; import java.util.*;
+public final class RoomDtos {private RoomDtos(){} public record Room(UUID id,String roomCode,String name,String floor,int capacity,String description,List<String> facilities,boolean active){} public record Save(@NotBlank @Size(max=50) String roomCode,@NotBlank @Size(max=150) String name,@NotBlank @Size(max=50) String floor,@Min(1) int capacity,@Size(max=5000) String description,List<@NotBlank @Size(max=100) String> facilities){}}

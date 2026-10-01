@@ -1,0 +1,7 @@
+﻿{
+  "email": "test.employee@example.com",
+  "password": "TestPassword@123",
+  "fullName": "Test Employee",
+  "employeeId": "EMP001",
+  "department": "Engineering"
+}
